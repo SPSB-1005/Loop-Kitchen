@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from datetime import datetime, timedelta
 import pandas as pd
+import pytz
 
 
 app = Flask(__name__)
@@ -42,7 +43,6 @@ class StoreTimezone(db.Model):
 
 
 def load_data():
-    # Load Store Status Data
     store_status_df = pd.read_csv('/Users/surya/Downloads/store_status.csv')
     for idx, row in store_status_df.iterrows():
         timestamp_str = row['timestamp_utc']
@@ -78,18 +78,12 @@ def load_data():
         ))
     
     db.session.commit()
-    
-
-
-
-import pytz
 
 def convert_local_to_utc(day_of_week, local_time, timezone_str):
     day_mapping = {'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3, 'Friday': 4, 'Saturday': 5, 'Sunday': 6}
     day_index = day_mapping.get(day_of_week, 0)
-
+    
     local_datetime = datetime.combine(datetime.utcnow().date(), local_time) + timedelta(days=day_index)
-
     timezone_obj = pytz.timezone(timezone_str)
     local_datetime = timezone_obj.localize(local_datetime)
     utc_datetime = local_datetime.astimezone(pytz.utc)
@@ -119,7 +113,6 @@ def extrapolate_to_business_hours(uptime, downtime, store_hours, timezone_data):
             'uptime': (uptime / total_business_hours) * 24,
             'downtime': (downtime / total_business_hours) * 24,
         })
-
     return extrapolated_data
 
 @app.route('/trigger_report', methods=['GET'])
