@@ -4,14 +4,16 @@ from sqlalchemy import create_engine
 from datetime import datetime, timedelta
 import pandas as pd
 import pytz
+from dotenv import load_dotenv
 
 
 app = Flask(__name__)
 
-username = 'root'
-password = 'root123'
-host = 'localhost'
-database = 'loop_store_monitoring'
+load_dotenv() 
+username = os.getenv('FLASK_USERNAME')
+password = os.getenv('FLASK_PASSWORD')
+host = os.getenv('FLASK_HOST')
+database = os.getenv('FLASK_DATABASE')
 
 engine = create_engine (f"mysql+mysqlconnector://{username}:{password}@{host}/{database}")
 
