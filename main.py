@@ -15,8 +15,6 @@ password = os.getenv('FLASK_PASSWORD')
 host = os.getenv('FLASK_HOST')
 database = os.getenv('FLASK_DATABASE')
 
-engine = create_engine (f"mysql+mysqlconnector://{username}:{password}@{host}/{database}")
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://username:password@localhost/database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -63,7 +61,7 @@ def load_data():
 
     store_hours_df = pd.read_csv('/Users/surya/Downloads/menu_hours.csv')
     for idx, row in store_hours_df.iterrows():
-        # Adjust the format string for parsing time with seconds
+        
         db.session.add(StoreHours(
             store_id=row['store_id'],
             dayOfWeek=row['day'],
@@ -95,7 +93,7 @@ def convert_local_to_utc(day_of_week, local_time, timezone_str):
 def calculate_overlap(start1, end1, start2, end2):
     overlap_start = max(start1, start2)
     overlap_end = min(end1, end2)
-    return max(0, (overlap_end - overlap_start).total_seconds() / 3600)  # Convert seconds to hours
+    return max(0, (overlap_end - overlap_start).total_seconds() / 3600)
 
 def extrapolate_to_business_hours(uptime, downtime, store_hours, timezone_data):
     extrapolated_data = []
